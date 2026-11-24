@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NetScope</string>
+    <string name="nav_wifi">Wi-Fi</string>
+    <string name="nav_bt">Bluetooth</string>
+    <string name="nav_speed">Tezlik</string>
+    <string name="nav_history">Tarix</string>
+    <string name="nav_monitor">Monitoring</string>
+    <string name="nav_settings">Sozlamalar</string>
+
+    <string name="btn_continue">Davom etish</string>
+    <string name="btn_cancel">Bekor qilish</string>
+    <string name="btn_grant">Ruxsat berish</string>
+    <string name="btn_ok">OK</string>
+
+    <string name="perm_location_title">Nega joylashuv ruxsati kerak?</string>
+    <string name="perm_location_why">Android atrofdagi Wi-Fi va Bluetooth qurilmalari ro\'yxatini faqat joylashuv ruxsati berilgan ilovalarga ko\'rsatadi, chunki bu ro\'yxat orqali telefonning taxminiy joylashuvini aniqlash mumkin. NetScope joylashuvingizni hech qayerga yubormaydi va saqlamaydi — barcha ma\'lumotlar faqat shu telefonda qoladi. Telefon sozlamalarida "Joylashuv" (GPS) xizmati ham yoqilgan bo\'lishi kerak.</string>
+
+    <string name="perm_bt_title">Bluetooth ruxsatlari</string>
+    <string name="perm_bt_why">Atrofdagi Bluetooth qurilmalarini topish uchun "Yaqin atrofdagi qurilmalar" (Bluetooth skanerlash va ulanish) ruxsati kerak. Eski Android versiyalarida bu joylashuv ruxsati orqali so\'raladi. NetScope hech qanday qurilmaga ulanmaydi va ularga ma\'lumot yubormaydi — faqat signalni kuzatadi.</string>
+
+    <string name="perm_phone_title">Telefon holati ruxsati</string>
+    <string name="perm_phone_why">Mobil internet turi (4G/5G) va signal darajasini ko\'rsatish uchun "Telefon holati" ruxsati kerak. Agar rad etsangiz, operator nomi baribir ko\'rsatiladi, lekin tarmoq turi va signal darajasi ko\'rsatilmaydi. Telefon raqamingiz o\'qilmaydi.</string>
+
+    <string name="perm_notif_title">Bildirishnoma ruxsati</string>
+    <string name="perm_notif_why">Monitoring xizmati ishlayotganda Android doimiy bildirishnoma ko\'rsatishni talab qiladi. Shuningdek, aloqa uzilganda yoki Wi-Fi\'da g\'ayrioddiy holat aniqlanganda sizni ogohlantiramiz.</string>
+
+    <string name="perm_camera_title">Kamera ruxsati</string>
+    <string name="perm_camera_why">Wi-Fi QR kodini skanerlash uchun kamera kerak. Tasvir faqat telefonning o\'zida, internetga yuborilmasdan qayta ishlanadi va saqlanmaydi.</string>
+
+    <string name="bt_mac_note">Eslatma: zamonaviy telefon va quloqchinlar maxfiylik uchun tasodifiy (o\'zgaruvchan) MAC manzildan foydalanadi. Shu sababli bir xil qurilma har safar boshqa manzil bilan ko\'rinishi mumkin va MAC orqali qurilmani aniq aniqlab bo\'lmaydi.</string>
+    <string name="bt_distance_note">Masofa RSSI signalidan taxminiy hisoblanadi (devor, tana, antenna ta\'sir qiladi) — aniq o\'lchov emas.</string>
+</resources>
