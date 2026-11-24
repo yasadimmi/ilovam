@@ -1,0 +1,102 @@
+name: Android CI
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Telefondan yuklash uchun: fayllar bitta papkada (tekis) bo'lsa,
+      # nomidagi "__" belgisi papka chizig'iga ("/") aylantirilib, struktura tiklanadi.
+      - name: Tekis fayllardan papkalarni tiklash
+        run: |
+          shopt -s nullglob
+          for f in *__* DOT_*; do
+            [ -f "$f" ] || continue
+            n=$(echo "$f" | sed 's#__#/#g')
+            case "$n" in DOT_*) n=".${n#DOT_}";; esac
+            mkdir -p "$(dirname "$n")"
+            mv "$f" "$n"
+          done
+          find . -path ./.git -prune -o -type f -name '*.kt' -print | head -n 3
+
+      # Agar repo ildizida NetScope.zip bo'lsa, u ochiladi va shu yerdan quriladi.
+      - name: Loyiha joylashuvini aniqlash
+        run: |
+          if [ -f NetScope.zip ]; then
+            mkdir -p _src && unzip -q -o NetScope.zip -d _src
+            D=$(dirname "$(find _src -name settings.gradle.kts | head -n 1)")
+            echo "PROJ=$D" >> "$GITHUB_ENV"
+          else
+            echo "PROJ=." >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+          build-root-directory: ${{ env.PROJ }}
+
+      - name: Gradle wrapper yaratish (agar yo'q bo'lsa)
+        working-directory: ${{ env.PROJ }}
+        run: |
+          [ -f gradlew ] || gradle wrapper --gradle-version 8.9 --distribution-type bin
+          chmod +x gradlew
+
+      - name: Debug APK
+        working-directory: ${{ env.PROJ }}
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Debug APK'ni artifakt sifatida yuklash
+        uses: actions/upload-artifact@v4
+        with:
+          name: NetScope-debug-apk
+          path: ${{ env.PROJ }}/app/build/outputs/apk/debug/*.apk
+
+      # ---- Faqat versiya tegi (v1.0.0) push qilinganda ----
+      - name: Keystore'ni tiklash
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          if [ -z "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "::error::KEYSTORE_BASE64 secret topilmadi. README'dagi 'Imzolash' bo'limiga qarang."; exit 1
+          fi
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      - name: Release APK (imzolangan)
+        if: startsWith(github.ref, 'refs/tags/v')
+        working-directory: ${{ env.PROJ }}
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Release APK'ni artifakt sifatida yuklash
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: NetScope-release-apk
+          path: ${{ env.PROJ }}/app/build/outputs/apk/release/*.apk
+
+      - name: GitHub Release yaratish
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.PROJ }}/app/build/outputs/apk/release/*.apk
+          generate_release_notes: true
